@@ -15,8 +15,8 @@
     "jsx": "preserve",
     // modified during project
     "incremental": false,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitAny": true
+    "noUncheckedIndexedAccess": true
+    //"noImplicitAny": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]

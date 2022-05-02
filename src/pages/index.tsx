@@ -1,10 +1,55 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
-
+import { useState } from "react";
+import { PrismaClient } from "@prisma/client";
+import ContactCard from "../components/ContactCard";
+import AddContactForm from "../components/AddContactForm";
 //holi
 
-const Home: NextPage = () => {
+const prisma = new PrismaClient();
+
+/*
+If you export a function called getServerSideProps 
+(Server-Side Rendering) from a page, Next.js will pre-render 
+this page on each request using the data returned 
+by getServerSideProps.
+
+getServerSideProps only runs on server-side and never 
+runs on the browser. If a page uses getServerSideProps, then:
+
+When you request this page directly, getServerSideProps runs 
+at request time, and this page will be pre-rendered with the 
+returned props
+When you request this page on client-side page transitions 
+through next/link or next/router, Next.js sends an API 
+request to the server, which runs getServerSideProps */
+
+export async function getServerSideProps() {
+  const contacts: Contact[] = await prisma.contact.findMany();
+  return {
+    props: {
+      initialContacts: contacts,
+    },
+  };
+}
+
+async function saveContact(contact: any) {
+  const response = await fetch("/api/hello", {
+    method: "POST",
+    body: JSON.stringify(contact),
+  });
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  return await response.json();
+}
+
+const Home: NextPage = ({ initialContacts }: any) => {
+  const [contacts, setContacts] = useState<Contact[]>(initialContacts);
+
   return (
     <div>
       <Head>
@@ -17,6 +62,23 @@ const Home: NextPage = () => {
         <h1 className="text-2xl font-bold">
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
+
+        <AddContactForm
+          onSubmit={async (data: any, e: any) => {
+            try {
+              console.log(data);
+              await saveContact(data);
+              setContacts([...contacts, data]);
+            } catch (err) {
+              console.log(err);
+            }
+          }}
+        />
+        {contacts.map((c, i: number) => (
+          <div className="mb-3" key={i}>
+            <ContactCard contact={c} />
+          </div>
+        ))}
       </main>
     </div>
   );
