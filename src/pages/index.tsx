@@ -26,7 +26,7 @@ through next/link or next/router, Next.js sends an API
 request to the server, which runs getServerSideProps */
 
 export async function getServerSideProps() {
-  const contacts: Contact[] = await prisma.contact.findMany();
+  const contacts: any = await prisma.contact.findMany();
   return {
     props: {
       initialContacts: contacts,
@@ -48,7 +48,7 @@ async function saveContact(contact: any) {
 }
 
 const Home: NextPage = ({ initialContacts }: any) => {
-  const [contacts, setContacts] = useState<Contact[]>(initialContacts);
+  const [contacts, setContacts] = useState<any>(initialContacts);
 
   return (
     <div>
@@ -74,7 +74,7 @@ const Home: NextPage = ({ initialContacts }: any) => {
             }
           }}
         />
-        {contacts.map((c, i: number) => (
+        {contacts.map((c: any, i: number) => (
           <div className="mb-3" key={i}>
             <ContactCard contact={c} />
           </div>
